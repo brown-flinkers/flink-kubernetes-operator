@@ -63,6 +63,8 @@ public enum ScalingMetric {
 
     NUM_RECORDS_OUT_PER_SECOND(true),
 
+    NUM_RECORDS_IN_PER_SECOND(true),
+
     /** Expected true processing rate after scale up. */
     EXPECTED_PROCESSING_RATE(false);
 

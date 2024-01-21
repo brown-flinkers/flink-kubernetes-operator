@@ -27,9 +27,14 @@ public class ScalingMetricJsonSender {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScalingMetricJsonSender.class);
 
-    private static String endpoint = "http://hello-python-service.default.svc.cluster.local:6000";
-    private static String endpointForGettingParalelisms =
-            "http://hello-python-service.default.svc.cluster.local:6000/paralelisms\n";
+    //    private static String endpoint =
+    // "http://hello-python-service.default.svc.cluster.local:6000";
+    //    private static String endpointForGettingParalelisms =
+    //            "http://hello-python-service.default.svc.cluster.local:6000/paralelisms\n";
+    private static String endpoint =
+            "http://scaling-service.default.svc.cluster.local:6000/metrics";
+    private static String endpointForGettingParallelisms =
+            "http://scaling-service.default.svc.cluster.local:6000/parallelisms"; // \n
 
     /**
      * Constructs a `ScalingMetricJsonSender` instance with a specified endpoint.
@@ -130,7 +135,7 @@ public class ScalingMetricJsonSender {
         HashMap<String, String> dataMap = new HashMap<>();
 
         try {
-            URL url = new URL(endpointForGettingParalelisms);
+            URL url = new URL(endpointForGettingParallelisms);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Content-Type", "application/json");

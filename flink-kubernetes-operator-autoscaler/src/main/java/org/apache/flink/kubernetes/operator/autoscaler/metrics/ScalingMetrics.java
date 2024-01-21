@@ -77,7 +77,7 @@ public class ScalingMetrics {
             scalingMetrics.put(ScalingMetric.TRUE_PROCESSING_RATE, Double.NaN);
             scalingMetrics.put(ScalingMetric.CURRENT_PROCESSING_RATE, Double.NaN);
         }
-
+        scalingMetrics.put(ScalingMetric.NUM_RECORDS_IN_PER_SECOND, numRecordsInPerSecond);
         scalingMetrics.put(ScalingMetric.NUM_RECORDS_OUT_PER_SECOND, numRecordsOutPerSecond);
     }
 
