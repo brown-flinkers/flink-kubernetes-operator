@@ -2,6 +2,7 @@ package org.apache.flink.kubernetes.operator.autoscaler;
 
 import org.apache.flink.kubernetes.operator.autoscaler.metrics.CollectedMetricHistory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,8 @@ public class ScalingMetricJsonSender {
             "http://scaling-service.default.svc.cluster.local:6000/metrics";
     private static String endpointForGettingParallelisms =
             "http://scaling-service.default.svc.cluster.local:6000/parallelisms"; // \n
+
+    private static HashMap<String, String> dataMap = new HashMap<>();
 
     /**
      * Constructs a `ScalingMetricJsonSender` instance with a specified endpoint.
@@ -132,7 +135,7 @@ public class ScalingMetricJsonSender {
      *     response.
      */
     public static HashMap<String, String> getDataFromEndpoint() {
-        HashMap<String, String> dataMap = new HashMap<>();
+        //        HashMap<String, String> dataMap = new HashMap<>();
 
         try {
             URL url = new URL(endpointForGettingParallelisms);
@@ -144,11 +147,18 @@ public class ScalingMetricJsonSender {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Successfully retrieved data
                 try (InputStream inputStream = connection.getInputStream()) {
-                    String responseData =
-                            new BufferedReader(new InputStreamReader(inputStream))
-                                    .lines()
-                                    .collect(Collectors.joining("\n"));
-                    LOG.info("===> responseData {}", responseData);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    JsonNode rootNode = objectMapper.readTree(inputStream);
+
+                    // Iterate over JSON keys and populate the map
+                    rootNode.fields()
+                            .forEachRemaining(
+                                    entry -> {
+                                        String key = entry.getKey();
+                                        String value = entry.getValue().asText();
+                                        dataMap.put(key, value);
+                                    });
+                    LOG.info("===> dataMap {}", dataMap);
                 }
             } else {
                 // Handle error response
@@ -173,7 +183,7 @@ public class ScalingMetricJsonSender {
             // Handle exception
             System.err.println("Error while retrieving data: " + e.getMessage());
         }
-
+        LOG.info("===> returning dataMap {}", dataMap);
         return dataMap;
     }
 }
