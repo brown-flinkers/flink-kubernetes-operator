@@ -162,6 +162,8 @@ public class JobAutoScalerImpl implements JobAutoScaler {
             } else {
                 flinkMetrics.numBalanced.inc();
             }
+            ScalingMetricJsonSender.writeCollectedMetricsToFile(
+                    collectedMetrics, "/tmp/collected-metrics.json");
 
             autoScalerInfo.replaceInKubernetes(kubernetesClient);
             return specAdjusted;
