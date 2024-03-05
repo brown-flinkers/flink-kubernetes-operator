@@ -64,6 +64,10 @@ public enum ScalingMetric {
     /** Lower boundary of the target data rate range. */
     SCALE_DOWN_RATE_THRESHOLD(false),
 
+    NUM_RECORDS_OUT_PER_SECOND(true),
+
+    NUM_RECORDS_IN_PER_SECOND(true),
+
     /** Expected true processing rate after scale up. */
     EXPECTED_PROCESSING_RATE(false);
 

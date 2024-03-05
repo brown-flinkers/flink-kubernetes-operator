@@ -102,8 +102,26 @@ public class ScalingExecutor<KEY, Context extends JobAutoScalerContext<KEY>> {
 
         addToScalingHistoryAndStore(
                 autoScalerStateStore, context, scalingHistory, clock.instant(), scalingSummaries);
-        autoScalerStateStore.storeParallelismOverrides(
-                context, getVertexParallelismOverrides(evaluatedMetrics, scalingSummaries));
+
+        // TODO uncomment for default implementation
+        Map<String, String> newVertexParallelism =
+                getVertexParallelismOverrides(evaluatedMetrics, scalingSummaries);
+        // TODO add my service to get metrics form the custom input decision and pass it to the
+        // below function
+        //        HashMap<String, String> newVertexParallelism =
+        //                ScalingMetricJsonSender.getDataFromEndpoint();
+        LOG.info(" ===> newVertexParallelism {} ", newVertexParallelism);
+        ScalingMetricJsonSender.writeAutoScalingDecisionToFile(
+                newVertexParallelism, "/tmp/new-parallelism-overrides.json");
+
+        Map<String, String> currentVertexParallelism =
+                autoScalerStateStore.getParallelismOverrides(context);
+        LOG.info(" ===> previous-parallelism-overrides {} ", currentVertexParallelism);
+
+        ScalingMetricJsonSender.writeAutoScalingDecisionToFile(
+                currentVertexParallelism, "/tmp/previous-parallelism-overrides.json");
+
+        autoScalerStateStore.storeParallelismOverrides(context, newVertexParallelism);
 
         return true;
     }

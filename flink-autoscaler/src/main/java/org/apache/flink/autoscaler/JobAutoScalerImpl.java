@@ -160,6 +160,8 @@ public class JobAutoScalerImpl<KEY, Context extends JobAutoScalerContext<KEY>>
 
         var collectedMetrics = metricsCollector.updateMetrics(ctx, stateStore);
 
+        ScalingMetricJsonSender.writeCollectedMetricsToFile(
+                collectedMetrics, "/tmp/collected-metrics.json");
         if (collectedMetrics.getMetricHistory().isEmpty()) {
             return;
         }

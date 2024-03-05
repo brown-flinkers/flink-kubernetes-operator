@@ -62,6 +62,19 @@ public class ScalingMetrics {
         double numRecordsInPerSecond =
                 getNumRecordsInPerSecond(flinkMetrics, jobVertexID, isSource);
 
+        scalingMetrics.put(ScalingMetric.NUM_RECORDS_IN_PER_SECOND, numRecordsInPerSecond);
+
+        double numRecordsOutPerSecond = getNumRecordsOutPerSecond(flinkMetrics, jobVertexID);
+        if (Double.isNaN(numRecordsOutPerSecond)) {
+            LOG.info(
+                    "===> numRecordsOutPerSecond was null, setting it with numRecordsInPerSecond {} for {}",
+                    numRecordsInPerSecond,
+                    jobVertexID);
+            numRecordsOutPerSecond = numRecordsInPerSecond;
+        }
+
+        scalingMetrics.put(ScalingMetric.NUM_RECORDS_OUT_PER_SECOND, numRecordsOutPerSecond);
+
         if (isSource) {
             double sourceDataRate = Math.max(0, numRecordsInPerSecond + lagGrowthRate);
             LOG.debug("Using computed source data rate {} for {}", sourceDataRate, jobVertexID);
