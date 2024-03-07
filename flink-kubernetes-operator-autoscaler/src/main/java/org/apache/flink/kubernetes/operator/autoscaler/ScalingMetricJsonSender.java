@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -125,14 +127,14 @@ public class ScalingMetricJsonSender {
      * with the results.
      *
      * @return A HashMap containing key-value pairs representing the retrieved data.
+     * @throws IOException If an error occurs while connecting to the endpoint or processing the
+     *     response.
      * @apiNote The function assumes that the data returned from the endpoint is in JSON format. The
      *     JSON response is parsed, and its contents are used to populate the HashMap. Adjust the
      *     parsing logic based on the actual format of the data returned by the endpoint.
      * @implNote This function uses the java.net.HttpURLConnection class to establish a connection
      *     to the specified endpoint. It handles both successful responses (HTTP 200 OK) and error
      *     responses.
-     * @throws IOException If an error occurs while connecting to the endpoint or processing the
-     *     response.
      */
     public static HashMap<String, String> getDataFromEndpoint() {
         //        HashMap<String, String> dataMap = new HashMap<>();
@@ -185,5 +187,50 @@ public class ScalingMetricJsonSender {
         }
         LOG.info("===> returning dataMap {}", dataMap);
         return dataMap;
+    }
+
+    public static void writeCollectedMetricsToFile(
+            CollectedMetricHistory collectedMetricHistory, String fileName) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            // Create a map to hold the data for serialization
+            Map<String, Object> jsonData = new HashMap<>();
+            jsonData.put("jobTopology", collectedMetricHistory.getJobTopology());
+            jsonData.put("metricHistory", collectedMetricHistory.getMetricHistory());
+
+            // Serialize the map to JSON
+            String content = objectMapper.writeValueAsString(jsonData);
+            writeToFile(content, fileName);
+        } catch (Exception e) {
+            LOG.error("Error writeCollectedMetricsToFile", e);
+        }
+    }
+
+    public static void writeAutoScalingDecisionToFile(
+            Map<String, String> parallelismOverrides, String fileName) {
+        LOG.info("====> writeAutoScalingDecisionToFile ({},{})", parallelismOverrides, fileName);
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            // Serialize the map to JSON
+            String content = objectMapper.writeValueAsString(parallelismOverrides);
+            writeToFile(content, fileName);
+        } catch (Exception e) {
+            LOG.error("===> Error writeAutoScalingDecisionToFile", e);
+        }
+    }
+
+    private static void writeToFile(String content, String fileName) {
+        try {
+            FileWriter fileWriter = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fileWriter);
+            bw.write(content);
+            bw.newLine();
+            bw.close();
+            // fileWriter.write(content);
+            fileWriter.close();
+        } catch (Exception e) {
+            LOG.error("Error writeToFile", e);
+        }
     }
 }
