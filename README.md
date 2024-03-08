@@ -57,6 +57,16 @@ aws ecr-public get-login-password --region us-east-1 --profile brown | docker lo
 docker buildx build \
     --platform linux/amd64 \
     --build-arg FLINK_VERSION=1.17.2 \
-    -t public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar1-v6 \
-    .  && docker push public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar1-v6
+    -t public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar7-v2 \
+    .  && docker push public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar7-v2
+```
+
+## Download collected metrics & decisions from Flink K8S operator pod
+
+```
+
+kubectl cp -n default flink-kubernetes-operator-c548d54cf-mrkjb:/tmp/collected-metrics.json ~/Downloads/brown-experiments/collected-metrics.json
+kubectl cp -n default flink-kubernetes-operator-c548d54cf-mrkjb:/tmp/new-parallelism-overrides.json ~/Downloads/brown-experiments/new-parallelism-overrides.json
+kubectl cp -n default flink-kubernetes-operator-c548d54cf-mrkjb:/tmp/previous-parallelism-overrides.json ~/Downloads/brown-experiments/previous-parallelism-overrides.json
+
 ```
