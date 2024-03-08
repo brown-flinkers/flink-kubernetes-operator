@@ -33,6 +33,7 @@ import io.javaoperatorsdk.operator.processing.event.ResourceID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -162,9 +163,17 @@ public class JobAutoScalerImpl implements JobAutoScaler {
             } else {
                 flinkMetrics.numBalanced.inc();
             }
-            ScalingMetricJsonSender.writeCollectedMetricsToFile(
-                    collectedMetrics, "/tmp/collected-metrics.json");
-
+            if (specAdjusted) {
+                ScalingMetricJsonSender.writeCollectedMetricsToFile(
+                        collectedMetrics, "/tmp/collected-metrics.json");
+                Map<String, String> scalingsAndBalanced = new HashMap<>();
+                scalingsAndBalanced.put(
+                        "numScalings", String.valueOf(flinkMetrics.numScalings.getCount()));
+                scalingsAndBalanced.put(
+                        "numBalanced", String.valueOf(flinkMetrics.numBalanced.getCount()));
+                ScalingMetricJsonSender.writeAutoScalingDecisionToFile(
+                        scalingsAndBalanced, "/tmp/scalings-and-balanced-count.json");
+            }
             autoScalerInfo.replaceInKubernetes(kubernetesClient);
             return specAdjusted;
         } catch (Throwable e) {
