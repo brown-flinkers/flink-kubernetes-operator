@@ -45,7 +45,7 @@ public enum ScalingMetric {
     CATCH_UP_DATA_RATE(false),
 
     /** Total number of pending records. */
-    LAG(false),
+    LAG(true),
 
     /** Job vertex parallelism. */
     PARALLELISM(false),
