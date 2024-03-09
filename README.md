@@ -54,11 +54,13 @@ The code in this repository is licensed under the [Apache Software License 2](LI
 ```dockerfile
 aws ecr-public get-login-password --region us-east-1 --profile brown | docker login --username AWS --password-stdin public.ecr.aws
 
+mvn spotless:apply
+
 docker buildx build \
     --platform linux/amd64 \
     --build-arg FLINK_VERSION=1.17.2 \
-    -t public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar7-v3 \
-    .  && docker push public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar7-v3
+    -t public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar9-v6 \
+    .  && docker push public.ecr.aws/m5r4d3y5/flink-kubernetes-operator:testing-mar9-v6
 ```
 
 ## Download collected metrics & decisions from Flink K8S operator pod
