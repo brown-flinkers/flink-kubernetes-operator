@@ -57,6 +57,8 @@ public class ScalingMetrics {
         var isSource = topology.isSource(jobVertexID);
 
         double busyTimeMsPerSecond = getBusyTimeMsPerSecond(flinkMetrics, conf, jobVertexID);
+        scalingMetrics.put(ScalingMetric.BUSY_TIME_PER_SEC, busyTimeMsPerSecond);
+
         double numRecordsInPerSecond =
                 getNumRecordsInPerSecond(flinkMetrics, jobVertexID, isSource);
         double numRecordsOutPerSecond = getNumRecordsOutPerSecond(flinkMetrics, jobVertexID);

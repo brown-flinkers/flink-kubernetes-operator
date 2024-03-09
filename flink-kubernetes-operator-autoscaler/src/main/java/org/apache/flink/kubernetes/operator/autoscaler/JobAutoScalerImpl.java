@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 import static org.apache.flink.kubernetes.operator.autoscaler.AutoscalerFlinkMetrics.initRecommendedParallelism;
 import static org.apache.flink.kubernetes.operator.autoscaler.AutoscalerFlinkMetrics.resetRecommendedParallelism;
@@ -155,6 +156,9 @@ public class JobAutoScalerImpl implements JobAutoScaler {
                 return false;
             }
 
+            Map<String, String> previousParallelismOverrides =
+                    new HashMap<>(autoScalerInfo.getCurrentOverrides());
+
             var specAdjusted =
                     scalingExecutor.scaleResource(resource, autoScalerInfo, conf, evaluatedMetrics);
 
@@ -164,15 +168,36 @@ public class JobAutoScalerImpl implements JobAutoScaler {
                 flinkMetrics.numBalanced.inc();
             }
             if (specAdjusted) {
+                if (previousParallelismOverrides.isEmpty()) {
+                    collectedMetrics
+                            .getJobTopology()
+                            .getParallelisms()
+                            .forEach(
+                                    new BiConsumer<JobVertexID, Integer>() {
+                                        @Override
+                                        public void accept(
+                                                JobVertexID jobVertexID, Integer parallelism) {
+                                            previousParallelismOverrides.put(
+                                                    jobVertexID.toString(),
+                                                    String.valueOf(parallelism));
+                                        }
+                                    });
+                }
+                LOG.info(" ===> previous-parallelism-overrides {} ", previousParallelismOverrides);
+
+                Map<String, String> newVertexParallelismOverrides =
+                        autoScalerInfo.getCurrentOverrides();
+                LOG.info(" ===> newVertexParallelism {} ", newVertexParallelismOverrides);
+
                 ScalingMetricJsonSender.writeCollectedMetricsToFile(
-                        collectedMetrics, "/tmp/collected-metrics.json");
-                Map<String, String> scalingsAndBalanced = new HashMap<>();
-                scalingsAndBalanced.put(
-                        "numScalings", String.valueOf(flinkMetrics.numScalings.getCount()));
-                scalingsAndBalanced.put(
-                        "numBalanced", String.valueOf(flinkMetrics.numBalanced.getCount()));
-                ScalingMetricJsonSender.writeAutoScalingDecisionToFile(
-                        scalingsAndBalanced, "/tmp/scalings-and-balanced-count.json");
+                        collectedMetrics,
+                        previousParallelismOverrides,
+                        newVertexParallelismOverrides,
+                        "/tmp/collected-metrics.json");
+
+                // TODO: sending metrics to the REST endpoint.
+                // ScalingMetricJsonSender.sendMetricsAsJson(collectedMetrics);
+                // HashMap<String, String> test = ScalingMetricJsonSender.getDataFromEndpoint();
             }
             autoScalerInfo.replaceInKubernetes(kubernetesClient);
             return specAdjusted;

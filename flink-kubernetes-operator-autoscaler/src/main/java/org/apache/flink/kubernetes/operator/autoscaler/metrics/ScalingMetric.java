@@ -45,7 +45,7 @@ public enum ScalingMetric {
     CATCH_UP_DATA_RATE(false),
 
     /** Total number of pending records. */
-    LAG(true),
+    LAG(false),
 
     /** Job vertex parallelism. */
     PARALLELISM(false),
@@ -61,9 +61,11 @@ public enum ScalingMetric {
     /** Lower boundary of the target data rate range. */
     SCALE_DOWN_RATE_THRESHOLD(false),
 
-    NUM_RECORDS_OUT_PER_SECOND(true),
+    NUM_RECORDS_OUT_PER_SECOND(false),
 
-    NUM_RECORDS_IN_PER_SECOND(true),
+    NUM_RECORDS_IN_PER_SECOND(false),
+
+    BUSY_TIME_PER_SEC(false),
 
     /** Expected true processing rate after scale up. */
     EXPECTED_PROCESSING_RATE(false);

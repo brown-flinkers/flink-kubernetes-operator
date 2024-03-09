@@ -190,7 +190,10 @@ public class ScalingMetricJsonSender {
     }
 
     public static void writeCollectedMetricsToFile(
-            CollectedMetricHistory collectedMetricHistory, String fileName) {
+            CollectedMetricHistory collectedMetricHistory,
+            Map<String, String> previousParallelismOverrides,
+            Map<String, String> newParallelismOverrides,
+            String fileName) {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
 
@@ -198,25 +201,14 @@ public class ScalingMetricJsonSender {
             Map<String, Object> jsonData = new HashMap<>();
             jsonData.put("jobTopology", collectedMetricHistory.getJobTopology());
             jsonData.put("metricHistory", collectedMetricHistory.getMetricHistory());
+            jsonData.put("previousParallelisms", previousParallelismOverrides);
+            jsonData.put("newParallelisms", newParallelismOverrides);
 
             // Serialize the map to JSON
             String content = objectMapper.writeValueAsString(jsonData);
             writeToFile(content, fileName);
         } catch (Exception e) {
             LOG.error("Error writeCollectedMetricsToFile", e);
-        }
-    }
-
-    public static void writeAutoScalingDecisionToFile(
-            Map<String, String> parallelismOverrides, String fileName) {
-        LOG.info("====> writeAutoScalingDecisionToFile ({},{})", parallelismOverrides, fileName);
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            // Serialize the map to JSON
-            String content = objectMapper.writeValueAsString(parallelismOverrides);
-            writeToFile(content, fileName);
-        } catch (Exception e) {
-            LOG.error("===> Error writeAutoScalingDecisionToFile", e);
         }
     }
 
