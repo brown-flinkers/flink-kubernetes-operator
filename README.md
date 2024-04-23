@@ -67,7 +67,7 @@ docker buildx build \
 
 ```
 
-kubectl cp -n default flink-kubernetes-operator-664d88f8c5-9vfhv:/tmp/collected-metrics.json ~/Downloads/brown-experiments/collected-metrics.json
+kubectl cp -n default flink-kubernetes-operator-78c857b947-8hz6m:/tmp/collected-metrics.json ~/Downloads/brown-experiments/collected-metrics.json
 kubectl cp -n default flink-kubernetes-operator-664d88f8c5-9vfhv:/tmp/new-parallelism-overrides.json ~/Downloads/brown-experiments/new-parallelism-overrides.json
 kubectl cp -n default flink-kubernetes-operator-664d88f8c5-9vfhv:/tmp/previous-parallelism-overrides.json ~/Downloads/brown-experiments/previous-parallelism-overrides.json
 kubectl cp -n default flink-kubernetes-operator-664d88f8c5-9vfhv:/tmp/scalings-and-balanced-count.json ~/Downloads/brown-experiments/scalings-and-balanced-count.json
