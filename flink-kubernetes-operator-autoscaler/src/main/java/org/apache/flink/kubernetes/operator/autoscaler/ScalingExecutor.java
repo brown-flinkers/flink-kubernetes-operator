@@ -106,17 +106,17 @@ public class ScalingExecutor {
         scalingInformation.addToScalingHistory(clock.instant(), scalingSummaries, conf);
 
         // TODO uncomment for default implementation
-        Map<String, String> newVertexParallelismOverrides =
-                getVertexParallelismOverrides(evaluatedMetrics, scalingSummaries);
-        scalingInformation.setCurrentOverrides(newVertexParallelismOverrides);
+//        Map<String, String> newVertexParallelismOverrides =
+//                getVertexParallelismOverrides(evaluatedMetrics, scalingSummaries);
+//        scalingInformation.setCurrentOverrides(newVertexParallelismOverrides);
 
         // TODO add my service to get metrics form the custom input decision and pass it to the
         // below function
-        //        HashMap<String, String> newVertexParallelism =
-        //                ScalingMetricJsonSender.getDataFromEndpoint();
-        //        LOG.info(" ===> newVertexParallelism {} ", newVertexParallelism);
-        //
-        //        scalingInformation.setCurrentOverrides(newVertexParallelism);
+        HashMap<String, String> newVertexParallelism =
+                ScalingMetricJsonSender.getDataFromEndpoint();
+        LOG.info(" ===> newVertexParallelism {} ", newVertexParallelism);
+
+        scalingInformation.setCurrentOverrides(newVertexParallelism);
 
         return true;
     }
