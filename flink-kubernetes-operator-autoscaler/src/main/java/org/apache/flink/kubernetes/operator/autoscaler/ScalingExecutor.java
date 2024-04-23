@@ -112,8 +112,7 @@ public class ScalingExecutor {
 
         // TODO add my service to get metrics form the custom input decision and pass it to the
         // below function
-        HashMap<String, String> newVertexParallelism =
-                ScalingMetricJsonSender.getDataFromEndpoint();
+        HashMap<String, String> newVertexParallelism = ScalingMetricJsonSender.getDataFromEndpoint();
         LOG.info(" ===> newVertexParallelism {} ", newVertexParallelism);
 
         scalingInformation.setCurrentOverrides(newVertexParallelism);

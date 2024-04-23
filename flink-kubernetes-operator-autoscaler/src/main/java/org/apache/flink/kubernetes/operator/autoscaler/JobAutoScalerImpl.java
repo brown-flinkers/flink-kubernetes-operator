@@ -196,8 +196,8 @@ public class JobAutoScalerImpl implements JobAutoScaler {
                         "/tmp/collected-metrics.json");
 
                 // TODO: sending metrics to the REST endpoint.
-                 ScalingMetricJsonSender.sendMetricsAsJson(collectedMetrics);
-                 HashMap<String, String> test = ScalingMetricJsonSender.getDataFromEndpoint();
+                ScalingMetricJsonSender.sendMetricsAsJson(collectedMetrics);
+                HashMap<String, String> test = ScalingMetricJsonSender.getDataFromEndpoint();
             }
             autoScalerInfo.replaceInKubernetes(kubernetesClient);
             return specAdjusted;
